@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="robots" content="index,follow">
+<meta name="copyright" content="六帖webアプリ All rights reserved.">
+<meta name="author" content="六帖" />
+<meta name="description" content="詰碁印刷用プログラム" />
+<meta name="keywords" content="囲碁,詰碁,アプリ,JavaScript" />
+
+<script src="jquery-2.1.4.min.js"></script>
+<script src="jszip.min.js"></script>
+<script src="SGFCollection.js"></script>
+<script src="SGFElement.js"></script>
+<script src="SGFParser.js"></script>
+
+<title>詰碁印刷</title>
+
+</head>
+
+<body>
+<input type="file" id="package" name="package" />
+<canvas id="c1"></canvas>
+</body>
+<script>
+
+document.getElementById("package").addEventListener('change', openPackage, false);
+
+function openPackage(evt)
+{
+	var files = evt.target.files;
+	SGFCollection.openFile(files[0]);
+
+	var sgfs = [];
+	var wait = setInterval(function() {
+	    if (!SGFCollection.isLoading()) {
+	    	//初期化が終わった
+	    	clearInterval(wait);
+			for(var i=0; i<SGFCollection.getCount(); i++){
+				var elem = new SGFElement(SGFCollection.getFile(i));
+				sgfs.push(elem);
+			}
+	    }
+	}, 100);
+}
+</script>
+</html>
