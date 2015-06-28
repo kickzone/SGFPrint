@@ -6,6 +6,8 @@ var SGFElement = function(content){
 	this.root = {};
 
 	SGFParser.parse(content, this);
+
+	this.branches = this.getAllBranch();
 }
 
 SGFElement.prototype = {
@@ -18,16 +20,17 @@ SGFElement.prototype = {
 		while(nodeStack.length){
 			var currentNode = nodeStack[nodeStack.length-1];
 			//子ノードがなければ終端とみなし、nodeStackの内容をretArrにコピー
-			if(nodeStack.childNodes.length == 0){
+			if(currentNode.childNodes.length == 0){
 				terminals.push(currentNode);
 				retArr.push([].concat(nodeStack)); //配列をシャローコピーするちょっと変わった書き方
 				nodeStack.pop();
 			}
 			else{
 				//terminalsに入っていない子ノードをスタックに入れる
-				//一つもなければ、探索が終了したものとして自分自身をpop
+				//一つもなければ、探索が終了したものとして終端一覧に入れ、自分自身をpop
 				var findChild = false;
-				for(node in currentNode.childNodes){
+				for(i in currentNode.childNodes){
+					var node = currentNode.childNodes[i];
 					if(terminals.indexOf(node) == -1){
 						findChild = true;
 						nodeStack.push(node);
@@ -35,6 +38,7 @@ SGFElement.prototype = {
 					}
 				}
 				if(!findChild){
+					terminals.push(currentNode);
 					nodeStack.pop();
 				}
 			}
@@ -48,8 +52,8 @@ SGFElement.prototype = {
 	//再帰用
 	process: function(node, func){
 		func(node);
-		for(var i in childNodes){
-			this.process(childNodes[i], func);
+		for(var i in node.childNodes){
+			this.process(node.childNodes[i], func);
 		}
 	},
 	//必要な碁盤のサイズを得る
@@ -60,13 +64,13 @@ SGFElement.prototype = {
 				var item = node.items[i];
 				var aIshi = [];
 				if(item.stone) aIshi.push(item.stone);
-				if(item.okiishi) aIshi.concat(item.okiishi);
+				if(item.okiishi) Array.prototype.push.apply(aIshi, item.okiishi);
 				for(var j in aIshi){
 					var ishi = aIshi[j];
 					if(ishi.x < retObj.xmin) retObj.xmin = ishi.x;
 					if(ishi.x > retObj.xmax) retObj.xmax = ishi.x;
 					if(ishi.y < retObj.ymin) retObj.ymin = ishi.y;
-					if(ishi.y > retOvj.ymax) retObj.ymax = ishi.y;
+					if(ishi.y > retObj.ymax) retObj.ymax = ishi.y;
 				}
 			}
 		});

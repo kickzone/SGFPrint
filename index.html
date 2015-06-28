@@ -11,10 +11,13 @@
 <meta name="keywords" content="囲碁,詰碁,アプリ,JavaScript" />
 
 <script src="jquery-2.1.4.min.js"></script>
+<script src="easeljs-0.8.1.min.js"></script>
 <script src="jszip.min.js"></script>
 <script src="SGFCollection.js"></script>
 <script src="SGFElement.js"></script>
 <script src="SGFParser.js"></script>
+<script src="Goban.js"></script>
+
 
 <title>詰碁印刷</title>
 
@@ -41,6 +44,11 @@ function openPackage(evt)
 			for(var i=0; i<SGFCollection.getCount(); i++){
 				var elem = new SGFElement(SGFCollection.getFile(i));
 				sgfs.push(elem);
+				if(i == 0){
+					var goban = new Goban($("#c1")[0], elem);
+					goban.drawGoban();
+					goban.drawStones(0);
+				}
 			}
 	    }
 	}, 100);
