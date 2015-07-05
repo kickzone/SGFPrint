@@ -2,9 +2,9 @@ const BLACK = 0;
 const WHITE = 1;
 
 //SGFファイル1つ分
-var SGFElement = function(content){
+var SGFElement = function(fileName, content){
 	this.root = {};
-
+	this.fileName = fileName;
 	SGFParser.parse(content, this);
 
 	this.branches = this.getAllBranch();
@@ -76,9 +76,31 @@ SGFElement.prototype = {
 		});
 		return retObj;
 
+	},
+	count: function(){
+		return this.branches.length;
+	},
+	//組み合わせidx番目のコメントを作成
+	getComment: function(idx){
+		var comment = "";
+		if(idx == -1){
+			comment = this.root.items[0].comment;
+		}else{
+			var branch = this.branches[idx];
+			var count = 1;
+			for(var i=1; i<branch.length; i++){
+				var node = branch[i];
+				for(var j in node.items){
+					if(node.items[j].comment != ""){
+						comment += count.toString() + ": " + node.items[j].comment + "\n";
+					}
+					count++;
+				}
+			}
+		}
+		return comment;
 	}
 }
-
 //ノード1つ分
 var SGFNode = function(text){
 	this.childNodes = [];

@@ -13,19 +13,21 @@
 <script src="jquery-2.1.4.min.js"></script>
 <script src="easeljs-0.8.1.min.js"></script>
 <script src="jszip.min.js"></script>
+<script src="encoding.js"></script>
 <script src="SGFCollection.js"></script>
 <script src="SGFElement.js"></script>
 <script src="SGFParser.js"></script>
 <script src="Goban.js"></script>
-
+<script src="Box.js"></script>
+<script src="encoding.js"></script>
 
 <title>詰碁印刷</title>
-
+<link rel="stylesheet" type="text/css" href="css/SGFPrint.css" media="all" />
 </head>
 
 <body>
 <input type="file" id="package" name="package" />
-<canvas id="c1"></canvas>
+<div id="allBox"></div>
 </body>
 <script>
 
@@ -36,18 +38,21 @@ function openPackage(evt)
 	var files = evt.target.files;
 	SGFCollection.openFile(files[0]);
 
-	var sgfs = [];
 	var wait = setInterval(function() {
 	    if (!SGFCollection.isLoading()) {
 	    	//初期化が終わった
 	    	clearInterval(wait);
-			for(var i=0; i<SGFCollection.getCount(); i++){
-				var elem = new SGFElement(SGFCollection.getFile(i));
-				sgfs.push(elem);
-				if(i == 0){
-					var goban = new Goban($("#c1")[0], elem);
-					goban.drawGoban();
-					goban.drawStones(0);
+
+			var sgfs = SGFCollection.getSGFs();
+			//まず問題を並べる
+			for(var i=0; i<sgfs.length; i++){
+				var box = new Box(sgfs[i], -1, $("#allBox"));
+			}
+			//次に回答を並べる
+			for(var i=0; i<sgfs.length; i++){
+				var sgf = sgfs[i];
+				for(var j=0; j<sgf.count(); j++){
+					var box = new Box(sgf, j, $("#allBox"));
 				}
 			}
 	    }

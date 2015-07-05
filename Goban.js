@@ -19,12 +19,12 @@ var Goban = function(canvas, element){
 
 Goban.prototype = {
 	drawGoban : function(){
-		//範囲を1.5広げる
+		//範囲を2広げる
 		var area = this.element.getGobanArea();
-		area.xmin = Math.max(area.xmin-1.5, 1);
-		area.xmax = Math.min(area.xmax+1.5, 19);
-		area.ymin = Math.max(area.ymin-1.5, 1);
-		area.ymax = Math.min(area.ymax+1.5, 19);
+		area.xmin = Math.max(area.xmin-2, 1);
+		area.xmax = Math.min(area.xmax+2, 19);
+		area.ymin = Math.max(area.ymin-2, 1);
+		area.ymax = Math.min(area.ymax+2, 19);
 		this.areaPlus = area;
 
 		this.canvas.width = this.PADDING*2 + (area.xmax - area.xmin)*this.GRID_SIZE;

@@ -3,6 +3,24 @@ var SGFCollection = (function(){
 	var zip;
 	var onLoading = false;
 	var fileList = [];
+	var sgfs = [];
+
+	function createSGFElement(){
+		for(var i=0; i<fileList.length; i++){
+			//windowsだから？ファイル名がsjisエンコーディングのことがある。どうかしてる。
+			//素晴らしいライブラリがあったのでこれを利用させてもらう
+			//http://polygon-planet-log.blogspot.jp/2012/04/javascript.html
+			var fileStr = fileList[i];
+			var fileArr = Encoding.stringToCode(fileList[i]);
+			if(Encoding.detect(fileArr, 'SJIS'))
+			{
+				var utf8Arr = Encoding.convert(fileArr, 'UNICODE', 'SJIS');
+				fileStr = Encoding.codeToString(utf8Arr);
+			}
+			var elem = new SGFElement(fileStr, zip.file(fileList[i]).asText());
+			sgfs.push(elem);
+		}
+	}
 
 	return {
 		isLoading: function(){return onLoading;},
@@ -11,6 +29,10 @@ var SGFCollection = (function(){
 
 		getFile: function(idx){
 			return zip.file(fileList[idx]).asText();
+		},
+
+		getFileName: function(idx){
+			return fileList[idx];
 		},
 
 		//パッケージファイルを開く zipファイルは開きっぱなしにしておく
@@ -28,11 +50,18 @@ var SGFCollection = (function(){
 						fileList.push(f);
 					}
 				}
+				createSGFElement();
 				onLoading = false;
+
 			}
 			// read the file !
 			// readAsArrayBuffer and readAsBinaryString both produce valid content for JSZip.
 			reader.readAsArrayBuffer(file);
+		},
+
+		getSGFs: function(){
+			return sgfs;
 		}
+
 	};
 })();
