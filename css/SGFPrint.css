@@ -1,5 +1,5 @@
 @media print{
-	#package{
+	.no-print{
 		display: none; /*ˆóü”ñ•\¦*/
 	}
 }
